@@ -9,7 +9,7 @@ const displayHeader = require('../utils/displayHeader');
 //! --------------------------------
 async function viewAllEmployees(connection) {
   let rows = await connection.query(`
-  SELECT e.first_name, e.last_name, title, d.name, concat("$",FORMAT(salary,0)) as salary, IF(m.first_name is NULL, "", concat(m.first_name, " ", m.last_name)) as manager 
+  SELECT e.first_name, e.last_name, title, d.name as department, concat("$",FORMAT(salary,0)) as salary, IF(m.first_name is NULL, "", concat(m.first_name, " ", m.last_name)) as manager 
   FROM employees as e
   LEFT JOIN employees as m on e.manager_id=m.id
   JOIN roles as r on e.role_id = r.id
@@ -27,7 +27,7 @@ async function viewAllEmployees(connection) {
 //!      VALUES (...)
 //! --------------------------------
 async function addAnEmployee(connection) {
-  let roles = (await connection.execute('SELECT * FROM roles;'))[0].map(d => `ID#${d.id} - ${d.job_title}`);
+  let roles = (await connection.execute('SELECT * FROM roles;'))[0].map(d => `ID#${d.id} - ${d.title}`);
   if (!roles.length) {
     console.log('You must first add a role!'.red);
     return;
@@ -178,5 +178,45 @@ async function updateManager(connection) {
   }
 }
 
-let crud = { viewAllEmployees, addAnEmployee, deleteEmployee, updateRole, updateManager };
+//! --------------------------------
+//!  6.) SELECT * FROM employees
+//!        GROUP BY MANAGER
+//! --------------------------------
+async function viewAllEmployeesByManager(connection) {
+  let rows = await connection.query(`
+  SELECT e.first_name, e.last_name, title, d.name as department, concat("$",FORMAT(salary,0)) as salary, IF(m.first_name is NULL, "", concat(m.first_name, " ", m.last_name)) as manager 
+  FROM employees as e
+  LEFT JOIN employees as m on e.manager_id=m.id
+  JOIN roles as r on e.role_id = r.id
+  JOIN departments as d on r.department_id=d.id
+  ORDER BY manager;`);
+  displayHeader('EMPLOYEES DATABASE BY MANAGER');
+  if (!rows[0].length) {
+    console.log('   employees database is empty!\n'.red);
+  } else {
+    console.table(rows[0]);
+  }
+}
+
+//! --------------------------------
+//!  7.) SELECT * FROM employees
+//!        GROUP BY DEPARTMENT
+//! --------------------------------
+async function viewAllEmployeesByDepartment(connection) {
+  let rows = await connection.query(`
+  SELECT e.first_name, e.last_name, title, d.name as department, concat("$",FORMAT(salary,0)) as salary, IF(m.first_name is NULL, "", concat(m.first_name, " ", m.last_name)) as manager 
+  FROM employees as e
+  LEFT JOIN employees as m on e.manager_id=m.id
+  JOIN roles as r on e.role_id = r.id
+  JOIN departments as d on r.department_id=d.id
+  ORDER BY department;`);
+  displayHeader('EMPLOYEES DATABASE BY DEPARTMENT');
+  if (!rows[0].length) {
+    console.log('   employees database is empty!\n'.red);
+  } else {
+    console.table(rows[0]);
+  }
+}
+
+let crud = { viewAllEmployees, addAnEmployee, deleteEmployee, updateRole, updateManager, viewAllEmployeesByManager, viewAllEmployeesByDepartment };
 module.exports = crud;

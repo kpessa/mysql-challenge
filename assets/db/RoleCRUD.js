@@ -56,7 +56,7 @@ async function addARole(connection) {
 }
 
 //! --------------------------------
-//!  2.) DELETE FROM roles
+//!  3.) DELETE FROM roles
 //!      WHERE ..
 //! --------------------------------
 async function deleteRole(connection) {
@@ -74,5 +74,21 @@ async function deleteRole(connection) {
   console.log(`\n${role} `.magenta + 'successfully '.green + 'deleted'.red + ' from roles database.\n');
 }
 
-let crud = { viewAllRoles, addARole, deleteRole };
+// //! --------------------------------
+// //!  4.) BUDGET BY DEPARTMENT
+// //! --------------------------------
+async function viewBudgetByDepartment(connection) {
+  let rows = await connection.execute(`
+  SELECT d.id, d.name as department, concat("$", FORMAT(SUM(salary),0)) as budget FROM roles as r
+JOIN departments as d on d.id = r.department_id
+GROUP BY d.name;`);
+  displayHeader('BUDGET BY DEPARTMENT');
+  if (!rows[0].length) {
+    console.log('   employees database is empty!\n'.red);
+  } else {
+    console.table(rows[0]);
+  }
+}
+
+let crud = { viewAllRoles, addARole, deleteRole, viewBudgetByDepartment };
 module.exports = crud;

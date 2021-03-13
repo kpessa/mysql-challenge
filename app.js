@@ -3,14 +3,12 @@ const mysql = require('mysql2/promise');
 const cTable = require('console.table');
 // IMPORT DATA
 const password = require('./config');
-// IMPORT INTIAL SETUP OF DATABASE
-const setupDatabases = require('./assets/db/schema/setup');
 // IMPORT UTILS
 const displayHeader = require('./assets/utils/displayHeader');
 // IMPORT CRUD OPERATIONS
-const { viewAllEmployees, addAnEmployee, deleteEmployee, updateRole, updateManager } = require('./assets/db/EmployeeCRUD');
+const { viewAllEmployees, addAnEmployee, deleteEmployee, updateRole, updateManager, viewAllEmployeesByManager, viewAllEmployeesByDepartment } = require('./assets/db/EmployeeCRUD');
 const { viewAllDepartments, addADepartment, deleteDepartment } = require('./assets/db/DepartmentCRUD');
-const { viewAllRoles, addARole, deleteRole } = require('./assets/db/RoleCRUD');
+const { viewAllRoles, addARole, deleteRole, viewBudgetByDepartment } = require('./assets/db/RoleCRUD');
 
 const connectToDatabase = async () => {
   // create the connection to database
@@ -19,13 +17,13 @@ const connectToDatabase = async () => {
     user: 'root',
     password,
     database: 'employee_manager',
-    multipleStatements: true,
   });
   return connection;
 };
 
 async function main() {
   console.clear();
+
   const connection = await connectToDatabase();
 
   displayHeader('EMPLOYEE DATABASE MANAGER');
@@ -56,14 +54,19 @@ async function main() {
             'Update Employee Role',
             'Update Employee Manager',
             new inquirer.Separator(),
+            'View All Employees By Manager',
+            'View All Employees By Department',
+            'View Budget by Department',
+            new inquirer.Separator(),
             'Quit',
           ],
-          pageSize: 17,
+          pageSize: 20,
         },
       ]);
       choice = answers.choice;
 
-      switch (choice) { // prettier-ignore
+      // prettier-ignore
+      switch (choice) { 
         //! DEPARTMENTS CRUD
         case 'View All Departments': await viewAllDepartments(connection); break;
         case 'Add a Department': await addADepartment(connection); break;
@@ -78,6 +81,10 @@ async function main() {
         case 'Delete an Employee': await deleteEmployee(connection); break;
         case 'Update Employee Role': await updateRole(connection); break;
         case 'Update Employee Manager': await updateManager(connection); break;
+        //! BONUS
+        case 'View All Employees By Manager': await viewAllEmployeesByManager(connection); break;
+        case 'View All Employees By Department': await viewAllEmployeesByDepartment(connection); break;
+        case 'View Budget by Department': await viewBudgetByDepartment(connection); break;
       } // prettier-ignore
     } catch (err) {
       console.log(err);
