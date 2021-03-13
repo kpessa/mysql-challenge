@@ -18,7 +18,8 @@ const connectToDatabase = async () => {
     host: 'localhost',
     user: 'root',
     password,
-    database: 'test',
+    database: 'employee_manager',
+    multipleStatements: true,
   });
   return connection;
 };
@@ -26,11 +27,6 @@ const connectToDatabase = async () => {
 async function main() {
   console.clear();
   const connection = await connectToDatabase();
-  try {
-    await setupDatabases(connection);
-  } catch (err) {
-    console.log(err);
-  }
 
   displayHeader('EMPLOYEE DATABASE MANAGER');
 

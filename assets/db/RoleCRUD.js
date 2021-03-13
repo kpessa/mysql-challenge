@@ -8,7 +8,7 @@ const displayHeader = require('../utils/displayHeader');
 //!  1.) SELECT * FROM roles
 //! --------------------------------
 async function viewAllRoles(connection) {
-  let rows = await connection.execute('SELECT id, job_title, concat("$", FORMAT(salary,0)) as salary, department_id FROM roles;');
+  let rows = await connection.execute('SELECT id, title, concat("$", FORMAT(salary,0)) as salary, department_id FROM roles;');
   displayHeader('ROLES DATABASE');
   if (!rows[0].length) {
     console.log('   roles database is empty!'.red + '\n');
@@ -37,7 +37,7 @@ async function addARole(connection) {
     },
     {
       type: 'input',
-      name: 'job_title',
+      name: 'title',
       message: 'What is the job title of the role?',
     },
     {
@@ -46,12 +46,12 @@ async function addARole(connection) {
       message: 'And the salary for the role?',
     },
   ]);
-  let { department, job_title, salary } = answers;
+  let { department, title, salary } = answers;
 
   let d_id = department.match(/ID#(\d+)/)[1];
-  connection.execute(`INSERT INTO roles (job_title, department_id, salary) VALUES (?,?,?);`, [job_title, d_id, salary]);
+  connection.execute(`INSERT INTO roles (title, department_id, salary) VALUES (?,?,?);`, [title, d_id, salary]);
   console.log(
-    '\n> ' + `${job_title} `.magenta + 'successfully'.green + ` added under ` + `${department.match(/- (.*)$/)[1]}`.brightWhite + ` with salary ` + `${salary}`.brightWhite + ` to roles database\n`
+    '\n> ' + `${title} `.magenta + 'successfully'.green + ` added under ` + `${department.match(/- (.*)$/)[1]}`.brightWhite + ` with salary ` + `${salary}`.brightWhite + ` to roles database\n`
   );
 }
 
@@ -60,7 +60,7 @@ async function addARole(connection) {
 //!      WHERE ..
 //! --------------------------------
 async function deleteRole(connection) {
-  let roles = (await connection.execute('SELECT * FROM roles;'))[0].map(d => `ID#${d.id} - ${d.job_title}`);
+  let roles = (await connection.execute('SELECT * FROM roles;'))[0].map(d => `ID#${d.id} - ${d.title}`);
   answers = await inquirer.prompt([
     {
       type: 'list',
