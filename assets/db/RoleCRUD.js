@@ -8,7 +8,7 @@ const displayHeader = require('../utils/displayHeader');
 //!  1.) SELECT * FROM roles
 //! --------------------------------
 async function viewAllRoles(connection) {
-  let rows = await connection.execute('SELECT * FROM roles;');
+  let rows = await connection.execute('SELECT id, job_title, concat("$", FORMAT(salary,0)) as salary, department_id FROM roles;');
   displayHeader('ROLES DATABASE');
   if (!rows[0].length) {
     console.log('   roles database is empty!'.red + '\n');
