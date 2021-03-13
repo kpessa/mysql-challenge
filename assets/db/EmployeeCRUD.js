@@ -9,7 +9,7 @@ const displayHeader = require('../utils/displayHeader');
 //! --------------------------------
 async function viewAllEmployees(connection) {
   let rows = await connection.query(`
-  SELECT e.first_name, e.last_name, job_title as title, d.name, salary, concat(m.first_name, " ", m.last_name) as manager 
+  SELECT e.first_name, e.last_name, job_title as title, d.name, concat("$",FORMAT(salary,0)) as salary, concat(m.first_name, " ", m.last_name) as manager 
   FROM employees as e
   LEFT JOIN employees as m on e.manager_id=m.id
   JOIN roles as r on e.role_id = r.id

@@ -88,7 +88,7 @@ async function main() {
     }
   } while (choice != 'Quit');
 
-  process.exit(1);
+  connection.end();
 }
 
 main();
