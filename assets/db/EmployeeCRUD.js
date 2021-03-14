@@ -33,7 +33,7 @@ async function addAnEmployee(connection) {
     return;
   }
 
-  let managers = (await connection.execute('SELECT first_name, last_name FROM employees;'))[0].map(row => `${row.first_name} ${row.last_name}`);
+  let managers = (await connection.execute('SELECT id, first_name, last_name FROM employees;'))[0].map(({ id, first_name, last_name }) => `ID#${id} - ${first_name} ${last_name}`);
   managers.unshift('None');
 
   answers = await inquirer.prompt([
@@ -62,14 +62,15 @@ async function addAnEmployee(connection) {
   ]);
   let { first_name, last_name, role, manager } = answers;
   roleID = role.match(/ID#(\d+)/)[1];
-  if ((manager = 'None')) {
+  if (manager == 'None') {
     connection.execute(
       `INSERT INTO employees (first_name, last_name, role_id)
     VALUES (?,?,?);`,
       [first_name, last_name, roleID]
     );
   } else {
-    console.log(manager);
+    let manager_id = +manager.match(/ID#(\d+)/)[1];
+    console.log(manager_id);
     connection.execute(
       `
     INSERT INTO employees (first_name, last_name, role_id, manager_id)

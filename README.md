@@ -10,6 +10,8 @@ In this repository, I created a Content Management System (CMS) command-line int
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Usage](#usage)
+    - [Option 1](#option-1)
+    - [Option 2](#option-2)
   - [License](#license)
   - [Contributing](#contributing)
   - [Questions](#questions)
@@ -18,7 +20,18 @@ In this repository, I created a Content Management System (CMS) command-line int
 Start by executing <code>npm run install</code> in the terminal.
 
 ## Usage
-To create and seed the database as well as run, execute <code>npm run all</code> into the terminal.  You will be prompted for your mysql password for the root user twice.  Once for the schema.sql file and once for the seed.sql file.  Alternatively, you can run <code>npm run migrate</code>, <code>npm run seed</code>, <code>npm run start</code> to run each command in succession to start the node application.
+### Option 1
+To create and seed the database as well as run, execute 
+1. <code>npm run all</code> into the terminal.  
+<caption>You will be prompted for your mysql password for the root user twice.  Once for the schema.sql file and once for the seed.sql file.</caption>  
+
+### Option 2
+Alternatively, you can run 
+
+1. <code>npm run migrate</code> 
+2. <code>npm run seed</code> 
+3. <code>npm run start</code> 
+<caption>to run each command in succession to start the node application.</caption>
 
 ## License
 <a href="https://choosealicense.com/licenses/mit"><img src="https://img.shields.io/badge/license-MIT-yellow" alt="MIT badge"></a>

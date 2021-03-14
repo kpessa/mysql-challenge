@@ -58,9 +58,10 @@ async function main() {
             'View All Employees By Department',
             'View Budget by Department',
             new inquirer.Separator(),
+            'Initialize Database',
             'Quit',
           ],
-          pageSize: 20,
+          pageSize: 23,
         },
       ]);
       choice = answers.choice;
@@ -85,6 +86,8 @@ async function main() {
         case 'View All Employees By Manager': await viewAllEmployeesByManager(connection); break;
         case 'View All Employees By Department': await viewAllEmployeesByDepartment(connection); break;
         case 'View Budget by Department': await viewBudgetByDepartment(connection); break;
+        //! BONUS
+        case 'Initialize Database': await initializeDatabase(connection); break;
       } // prettier-ignore
     } catch (err) {
       console.log(err);
