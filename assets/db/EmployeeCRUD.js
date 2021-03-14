@@ -9,7 +9,7 @@ const displayHeader = require('../utils/displayHeader');
 //! --------------------------------
 async function viewAllEmployees(connection) {
   let rows = await connection.query(`
-  SELECT e.first_name, e.last_name, title, d.name as department, concat("$",FORMAT(salary,0)) as salary, IF(m.first_name is NULL, "", concat(m.first_name, " ", m.last_name)) as manager 
+  SELECT e.id, e.first_name, e.last_name, title, d.name as department, concat("$",FORMAT(salary,0)) as salary, IF(m.first_name is NULL, "", concat(m.first_name, " ", m.last_name)) as manager 
   FROM employees as e
   LEFT JOIN employees as m on e.manager_id=m.id
   JOIN roles as r on e.role_id = r.id
@@ -112,12 +112,12 @@ async function deleteEmployee(connection) {
 //!      WHERE ID = ?
 //! --------------------------------
 async function updateRole(connection) {
-  let employees = (await connection.query('SELECT e.id, first_name, last_name, job_title FROM employees as e JOIN roles as r on e.role_id = r.id;'))[0].map(
-    ({ id, first_name, last_name, job_title }) => `ID#${id} - ${first_name} ${last_name} - ${job_title}`
+  let employees = (await connection.query('SELECT e.id, first_name, last_name, title FROM employees as e JOIN roles as r on e.role_id = r.id;'))[0].map(
+    ({ id, first_name, last_name, title }) => `ID#${id} - ${first_name} ${last_name} - ${title}`
   );
   employees.push(new inquirer.Separator(), 'Cancel');
 
-  let roles = (await connection.query('SELECT id, job_title FROM roles;'))[0].map(({ id, job_title }) => `ID#${id} - ${job_title}`);
+  let roles = (await connection.query('SELECT id, title FROM roles;'))[0].map(({ id, title }) => `ID#${id} - ${title}`);
   roles.push(new inquirer.Separator(), 'Cancel');
 
   let { choice, role } = await inquirer.prompt([
@@ -138,9 +138,9 @@ async function updateRole(connection) {
     let id = choice.match(/ID#(\d+) -/)[1];
     let role_id = role.match(/ID#(\d+) -/)[1];
     let name = choice.match(/- (.*) -/)[1];
-    let job_title = role.match(/- (.*)$/)[1];
+    let title = role.match(/- (.*)$/)[1];
     await connection.execute('UPDATE employees SET role_id = ? WHERE id = ?', [role_id, id]);
-    console.log(`\n${name}`.magenta + `'s role ` + 'successfully'.green + ' updated'.brightWhite + ' to ' + `${job_title}`.magenta + '\n');
+    console.log(`\n${name}`.magenta + `'s role ` + 'successfully'.green + ' updated'.brightWhite + ' to ' + `${title}`.magenta + '\n');
   }
 }
 
@@ -150,9 +150,10 @@ async function updateRole(connection) {
 //!      WHERE ID = ?
 //! --------------------------------
 async function updateManager(connection) {
-  let employees = (await connection.execute('SELECT id, first_name, last_name, manager_id FROM employees;'))[0].map(
-    ({ id, first_name, last_name, manager }) => `ID#${id} - ${first_name} ${last_name} - ${manager}`
-  );
+  let employees = (
+    await connection.execute(`SELECT e.id as id, concat(e.first_name," ",e.last_name) as name, concat(m.first_name,' ',m.last_name) as manager FROM employees as e
+  LEFT JOIN employees as m on e.manager_id=m.id; `)
+  )[0].map(({ id, name, manager }) => `ID#${id} - ${name} - ${manager}`);
 
   let managers = (await connection.query('SELECT id, first_name, last_name FROM employees'))[0].map(({ id, first_name, last_name }) => `ID#${id} - ${first_name} ${last_name}`);
   managers.push(new inquirer.Separator(), 'Cancel');

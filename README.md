@@ -1,6 +1,7 @@
 <a href="https://choosealicense.com/licenses/mit"><img src="https://img.shields.io/badge/license-MIT-yellow" alt="MIT badge"></a>
   # mysql-challenge
-  
+  ![screencast of node app](./screencast.gif)
+
 ## Description
 In this repository, I created a Content Management System (CMS) command-line interface (CLI) to manage employees of a company.  You can add departments, roles, and employees, as well as view your employees by manager, department or view a combined buget of a department.
 
